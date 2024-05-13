@@ -1,0 +1,58 @@
+name: Build Workmaps TakeHome Assessment
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres-ci:postgres-ci-secret@localhost:5432/workmaps-tha-db-ci
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+    services:
+      postgres:
+        image: postgis/postgis:15-3.4
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_DB: workmaps-tha-db-ci
+          POSTGRES_USER: postgres-ci
+          POSTGRES_PASSWORD: postgres-ci-secret
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          --name postgres
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20" # You can change the Node.js version to your preferred version
+
+      - name: Install Dependencies
+        run: |
+          npm install
+          npm install -g ts-node
+          npm install -g tsx
+
+      - name: Test
+        env:
+          # Specify our postgres connections
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+        run: |
+          npm run ci-test
+
+      - name: Build NextJS App
+        env:
+          # Specify our postgres connections
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+          NODE_ENV: "production" # use when calling `next build` in CI
+          
+        run: npm run build
