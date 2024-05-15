@@ -25,6 +25,7 @@ export function EmployerJobList({
   const [filteredJobs, setFilteredJobs] =
     useState<EmployerCardProps[]>(groupedJobs);
   const [urgentlyHiring, setUrgentlyHiring] = useState<boolean>(false);
+  const [isGridView, setIsGridView] = useState<boolean>(true);
 
   useEffect(() => {
     let filtered = groupedJobs
@@ -62,6 +63,10 @@ export function EmployerJobList({
     setTotalMatchingJobs(totalJobs);
     setTotalMatchingEmployers(totalEmployers);
   }, [groupedJobs, debouncedSearchQuery, urgentlyHiring]);
+
+  const handleToggleView = () => {
+    setIsGridView((prev) => !prev);
+  };
 
   if (isMobile) {
     return (
@@ -122,16 +127,37 @@ export function EmployerJobList({
         </div>
       </aside>
       <main className="flex flex-col gap-2 w-3/4 p-[12px]">
-        <div className="text-md text-gray-700 px-3 py-[20px] font-medium">
-          {totalMatchingJobs > 0
-            ? `${totalMatchingJobs} matching jobs from ${totalMatchingEmployers} 
-            employers`
-            : "No matching jobs found"}
+        <div className="flex justify-between items-center text-md text-gray-700 px-3 py-[20px] font-medium">
+          <span>
+            {totalMatchingJobs > 0
+              ? `${totalMatchingJobs} matching jobs from ${totalMatchingEmployers} employers`
+              : "No matching jobs found"}
+          </span>
+          <label className="inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={!isGridView}
+              className="sr-only peer"
+              onChange={handleToggleView}
+            />
+            <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus-visible:ring-4 peer-focus:ring-primary dark:peer-focus:ring-positive-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-positive-200"></div>
+            <span className="ms-3 text-med font-medium text-gray-900 dark:text-gray-300">
+              {isGridView ? "Grid View" : "List View"}
+            </span>
+          </label>
         </div>
-        {filteredJobs &&
-          filteredJobs.map((group) => (
-            <EmployerCard key={group.employer_title} props={group} />
-          ))}
+        <div
+          className={
+            isGridView
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto max-h-[calc(100vh-150px)] rounded"
+              : "flex flex-col gap-2 overflow-y-auto max-h-[calc(100vh-150px)] rounded"
+          }
+        >
+          {filteredJobs &&
+            filteredJobs.map((group) => (
+              <EmployerCard key={group.employer_title} props={group} />
+            ))}
+        </div>
       </main>
     </div>
   );
