@@ -32,9 +32,13 @@ const groupJobsByEmployer = (jobs: Job[]): EmployerCardProps[] => {
 };
 
 const fetchJobs: () => Promise<Job[]> = async () => {
-  const response = await fetch("http://localhost:3000/api/jobs");
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const response = await fetch(`${siteUrl}/api/jobs`);
   const data = await response.json();
-  return data.data.filter((job: { verified: boolean }) => job.verified);
+  if (!data.ok) {
+    throw new Error(data.error || "Failed to fetch jobs");
+  }
+  return data.result;
 };
 
 export default async function Home() {
