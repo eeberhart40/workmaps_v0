@@ -3,8 +3,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { Job } from "../app/types/Job";
 
-export interface JobListingProps
-  extends Pick<Job, "id" | "title" | "payMin" | "payMax"> {}
+interface JobListingProps
+  extends Pick<Job, "id" | "title" | "payMin" | "payMax" | "employer_title"> {}
 
 export interface EmployerCardProps
   extends Pick<Job, "employer_logo_url" | "employer_title" | "urgent_hiring"> {
@@ -36,7 +36,10 @@ export const EmployerCard: FC<{ props: EmployerCardProps }> = ({ props }) => {
         </div>
       </div>
       {props.jobs.map((job) => (
-        <JobListing key={job.id} props={job} />
+        <JobListing
+          key={job.id}
+          props={{ ...job, employer_title: props.employer_title }}
+        />
       ))}
     </div>
   );
@@ -54,6 +57,7 @@ const JobListing: FC<{ props: JobListingProps }> = ({ props }) => {
       <Link
         href={`/click-out/${props.id}`}
         className="text-primaryForeground bg-primary text-m rounded-[48px] py-2 px-3 font-semibold flex items-center justify-center hover:text-positive-200 focus-visible:ring-1 transform transition-transform duration-150 active:scale-95"
+        aria-label={`Apply for ${props.title} at ${props.employer_title}`}
       >
         Apply
       </Link>
