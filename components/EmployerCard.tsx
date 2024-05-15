@@ -3,12 +3,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { Job } from "../app/types/Job";
 
-interface JobListingProps
-  extends Pick<Job, "id" | "title" | "payMin" | "payMax" | "employer_title"> {}
+type JobListing = Pick<Job, "id" | "title" | "payMin" | "payMax">;
+
+interface JobListingProps extends JobListing {
+  employer_title: string;
+}
 
 export interface EmployerCardProps
   extends Pick<Job, "employer_logo_url" | "employer_title" | "urgent_hiring"> {
-  jobs: JobListingProps[];
+  jobs: JobListing[];
 }
 
 export const EmployerCard: FC<{ props: EmployerCardProps }> = ({ props }) => {
