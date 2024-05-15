@@ -19,8 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Head>
+        {/* @ts-ignore */}
         <title>{metadata.title}</title>
         <link rel="icon" href="/favicon.ico" />
+        {/* @ts-ignore */}
         <meta name="description" content={metadata.description} />
       </Head>
       <body className={inter.className}>
