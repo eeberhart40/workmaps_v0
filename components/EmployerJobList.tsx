@@ -24,7 +24,6 @@ export function EmployerJobList({
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [filteredJobs, setFilteredJobs] = useState(groupedJobs);
   const [urgentlyHiring, setUrgentlyHiring] = useState(false);
-  const [sortHourlyRate, setSortHourlyRate] = useState(false);
 
   useEffect(() => {
     let filtered = groupedJobs
@@ -49,15 +48,6 @@ export function EmployerJobList({
       filtered = filtered.filter((group) => group.urgent_hiring);
     }
 
-    if (sortHourlyRate) {
-      filtered = filtered.map((group) => ({
-        ...group,
-        jobs: group.jobs.sort(
-          (a, b) => (parseInt(a.payMin) || 0) - (parseInt(b.payMin) || 0)
-        ),
-      }));
-    }
-
     const [totalJobs, totalEmployers] = filtered.reduce(
       (acc, group) => {
         acc[0] += group.jobs.length;
@@ -70,7 +60,7 @@ export function EmployerJobList({
     setFilteredJobs(filtered);
     setTotalMatchingJobs(totalJobs);
     setTotalMatchingEmployers(totalEmployers);
-  }, [groupedJobs, debouncedSearchQuery, urgentlyHiring, sortHourlyRate]);
+  }, [groupedJobs, debouncedSearchQuery, urgentlyHiring]);
 
   if (isMobile) {
     return (
@@ -94,14 +84,23 @@ export function EmployerJobList({
   return (
     <main className="flex min-h-screen flex-row items-start justify-between bg-secondary">
       <aside className="w-1/4 p-4 bg-card self-stretch border-r border-t border-cardTertiary">
-        <div className="flex flex-col self-stretch gap-4">
-          <input
-            type="text"
-            placeholder="Search jobs by title or employer"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full p-3 rounded border border-cardTertiary text-foreground bg-secondary transition-shadow duration-150 shadow-sm focus:outline-none focus-visible:ring-1 focus-visible:ring-primary"
-          />
+        <div className="flex flex-col self-stretch gap-6">
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="searchJobs"
+              className="text-md text-primaryForeground font-bold"
+            >
+              Search Jobs
+            </label>
+            <input
+              id="searchJobs"
+              type="text"
+              placeholder="Search jobs by title or employer"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full p-3 rounded border border-cardTertiary text-foreground bg-secondary transition-shadow duration-150 shadow-sm focus:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+            />
+          </div>
           <div className="flex gap-3 items-center">
             <input
               id="urgentlyHiring"
@@ -111,7 +110,7 @@ export function EmployerJobList({
               onChange={(e) => setUrgentlyHiring(e.target.checked)}
             />
             <label
-              className="text-l text-primaryForeground cursor-pointer font-bold"
+              className="text-md text-primaryForeground cursor-pointer font-bold"
               htmlFor="urgentlyHiring"
             >
               Urgently Hiring
