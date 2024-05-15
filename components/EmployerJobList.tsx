@@ -17,13 +17,14 @@ export function EmployerJobList({
   totalEmployers,
 }: EmployerJobListProps) {
   const isMobile = useWindowWidth();
-  const [totalMatchingJobs, setTotalMatchingJobs] = useState(totalJobs);
+  const [totalMatchingJobs, setTotalMatchingJobs] = useState<number>(totalJobs);
   const [totalMatchingEmployers, setTotalMatchingEmployers] =
-    useState(totalEmployers);
-  const [searchQuery, setSearchQuery] = useState("");
+    useState<number>(totalEmployers);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
-  const [filteredJobs, setFilteredJobs] = useState(groupedJobs);
-  const [urgentlyHiring, setUrgentlyHiring] = useState(false);
+  const [filteredJobs, setFilteredJobs] =
+    useState<EmployerCardProps[]>(groupedJobs);
+  const [urgentlyHiring, setUrgentlyHiring] = useState<boolean>(false);
 
   useEffect(() => {
     let filtered = groupedJobs
@@ -64,7 +65,7 @@ export function EmployerJobList({
 
   if (isMobile) {
     return (
-      <main className="flex min-h-screen flex-col justify-between bg-secondary">
+      <div className="flex min-h-screen flex-col justify-between bg-secondary">
         <div className="flex flex-col gap-2 self-stretch p-[12px]">
           <div className="text-md text-gray-700 px-3 py-[20px] font-medium">
             {totalMatchingJobs > 0
@@ -72,17 +73,19 @@ export function EmployerJobList({
             employers`
               : "No matching jobs found"}
           </div>
-          {filteredJobs &&
-            filteredJobs.map((group) => (
-              <EmployerCard key={group.employer_title} props={group} />
-            ))}
+          <main>
+            {filteredJobs &&
+              filteredJobs.map((group) => (
+                <EmployerCard key={group.employer_title} props={group} />
+              ))}
+          </main>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="flex min-h-screen flex-row items-start justify-between bg-secondary">
+    <div className="flex min-h-screen flex-row items-start justify-between bg-secondary">
       <aside className="w-1/4 p-4 bg-card self-stretch border-r border-t border-cardTertiary">
         <div className="flex flex-col self-stretch gap-6">
           <div className="flex flex-col gap-2">
@@ -118,7 +121,7 @@ export function EmployerJobList({
           </div>
         </div>
       </aside>
-      <div className="flex flex-col gap-2 w-3/4 p-[12px]">
+      <main className="flex flex-col gap-2 w-3/4 p-[12px]">
         <div className="text-md text-gray-700 px-3 py-[20px] font-medium">
           {totalMatchingJobs > 0
             ? `${totalMatchingJobs} matching jobs from ${totalMatchingEmployers} 
@@ -129,7 +132,7 @@ export function EmployerJobList({
           filteredJobs.map((group) => (
             <EmployerCard key={group.employer_title} props={group} />
           ))}
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }
