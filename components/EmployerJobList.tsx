@@ -68,16 +68,19 @@ export function EmployerJobList({
     setIsGridView((prev) => !prev);
   };
 
+  const jobMatchText =
+    totalMatchingJobs > 0
+      ? `${totalMatchingJobs} matching jobs from ${totalMatchingEmployers} 
+employers`
+      : "No matching jobs found";
+
   if (isMobile) {
     return (
       <div className="flex min-h-screen flex-col justify-between bg-secondary">
         <div className="flex flex-col gap-2 self-stretch p-[12px]">
-          <div className="text-md text-gray-700 px-3 py-[20px] font-medium">
-            {totalMatchingJobs > 0
-              ? `${totalMatchingJobs} matching jobs from ${totalMatchingEmployers} 
-            employers`
-              : "No matching jobs found"}
-          </div>
+          <h1 className="text-md text-gray-700 px-3 py-[20px] font-medium">
+            {jobMatchText}
+          </h1>
           <main>
             {filteredJobs &&
               filteredJobs.map((group) => (
@@ -127,12 +130,10 @@ export function EmployerJobList({
         </div>
       </aside>
       <main className="flex flex-col gap-2 w-3/4 p-[12px]">
-        <div className="flex justify-between items-center text-md text-gray-700 px-3 py-[20px] font-medium">
-          <span>
-            {totalMatchingJobs > 0
-              ? `${totalMatchingJobs} matching jobs from ${totalMatchingEmployers} employers`
-              : "No matching jobs found"}
-          </span>
+        <div className="flex justify-between items-center">
+          <h1 className="text-md text-gray-700 px-3 py-[20px] font-medium">
+            {jobMatchText}
+          </h1>
           <label className="inline-flex items-center cursor-pointer">
             <input
               type="checkbox"
