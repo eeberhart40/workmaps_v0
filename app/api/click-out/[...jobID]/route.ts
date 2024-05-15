@@ -11,10 +11,11 @@ type Params = {
 };
 
 export async function GET(request: NextRequest, { params }: Params) {
-  const url = new URL(request.url);
+  if (!params.jobID || params.jobID.length === 0) {
+    return redirectHome();
+  }
 
-  // Parse jobID from the string array to a single number
-  const jobIdStr = params.jobID ? params.jobID[0] : ""; // Assuming that the jobID is always the first element
+  const jobIdStr = params.jobID[0]; // Assuming that the jobID is always the first element
   const jobId = parseInt(jobIdStr, 10);
 
   // Check if the parsed jobId is a valid number
@@ -22,12 +23,23 @@ export async function GET(request: NextRequest, { params }: Params) {
     return redirectHome();
   }
 
-  const job = await fetchJobById(jobId).catch((e) => {
-    return null;
-  });
+  try {
+    const job = await fetchJobById(jobId);
 
-  return NextResponse.json({
-    ok: job ? job?.ok : false,
-    result: job,
-  });
+    if (!job) {
+      return NextResponse.json(
+        { ok: false, error: "Job not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ ok: true, result: job }, { status: 200 });
+  } catch (error) {
+    console.error("Error fetching job by ID:", error);
+
+    return NextResponse.json(
+      { ok: false, error: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }
